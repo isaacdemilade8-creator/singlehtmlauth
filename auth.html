@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* === CONFIGURATION VARIABLES === */
+            /* Brand Colors */
+            --primary-color: #4ecdc4;
+            --secondary-color: #7877c6;
+            --accent-color: #ff6b6b;
+            
+            /* Background */
+            --bg-gradient-1: #1a1a2e;
+            --bg-gradient-2: #16213e;
+            --bg-gradient-3: #0f3460;
+            
+            /* Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 20px;
+            
+            /* Typography */
+            --font-family: 'Poppins', sans-serif;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            
+            /* Spacing & Layout */
+            --card-width: 900px;
+            --card-height: 550px;
+            --border-radius: 30px;
+            --input-radius: 15px;
+            --btn-radius: 15px;
+            
+            /* Animation Speed */
+            --transition-speed: 0.8s;
+            --hover-speed: 0.3s;
+            
+            /* Particle Settings */
+            --particle-count: 50;
+            --particle-color: rgba(255, 255, 255, 0.5);
+            
+            /* Feature Toggles (1 = on, 0 = off) */
+            --show-particles: 1;
+            --show-social: 1;
+            --show-remember: 1;
+            --show-forgot: 1;
+            --show-terms: 1;
+            --enable-3d-tilt: 1;
+            --enable-shimmer: 1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f0f1a;
+            overflow: hidden;
+            perspective: 1500px;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(78, 205, 196, 0.15) 0%, transparent 50%);
+            animation: bgMove 15s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(5deg); }
+            66% { transform: translate(-20px, 20px) rotate(-3deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            opacity: var(--show-particles);
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--particle-color);
+            border-radius: 50%;
+            animation: float 20s infinite;
+            box-shadow: 0 0 10px var(--particle-color);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-10vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* 3D Card Container */
+        .container {
+            width: var(--card-width);
+            height: var(--card-height);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .container.flip {
+            transform: rotateY(180deg);
+        }
+
+        /* Glassmorphism Card */
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 0 80px rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.03) 50%,
+                transparent 70%
+            );
+            animation: shimmer 6s infinite;
+            opacity: var(--enable-shimmer);
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        /* Inner Layout */
+        .inner {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-side {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-side {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2) 0%, rgba(120, 119, 198, 0.2) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></svg>');
+            background-size: 30px 30px;
+            opacity: 0.5;
+        }
+
+        /* 3D Floating Elements */
+        .floating-icon {
+            font-size: 80px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            animation: floatIcon 3s ease-in-out infinite;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-20px) rotateY(10deg); }
+        }
+
+        .info-side h2 {
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-side p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 300px;
+        }
+
+        /* Form Styles */
+        .form-side h2 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .form-side .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* Input Groups */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--input-radius);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: var(--font-family);
+            transition: all var(--hover-speed) ease;
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: transparent;
+        }
+
+        .input-group input:focus {
+            border-color: rgba(78, 205, 196, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.1);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: all var(--hover-speed) ease;
+        }
+
+        .input-group input:focus + i {
+            color: var(--primary-color);
+        }
+
+        /* Floating Label Animation */
+        .input-group label {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: all var(--hover-speed) ease;
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        .input-group input:focus ~ label,
+        .input-group input:not(:placeholder-shown) ~ label {
+            top: -10px;
+            left: 15px;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            background: rgba(15, 15, 26, 0.8);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            opacity: var(--show-remember);
+        }
+
+        .remember input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: all var(--hover-speed) ease;
+        }
+
+        .remember input[type="checkbox"]:checked {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .remember input[type="checkbox"]:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 0.7rem;
+        }
+
+        .forgot {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--hover-speed) ease;
+            position: relative;
+            opacity: var(--show-forgot);
+        }
+
+        .forgot::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width var(--hover-speed) ease;
+        }
+
+        .forgot:hover::after {
+            width: 100%;
+        }
+
+        /* Button Styles */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: var(--btn-radius);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: var(--font-family);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--hover-speed) ease;
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Social Login */
+        .social-login {
+            margin-top: 25px;
+            text-align: center;
+            opacity: var(--show-social);
+        }
+
+        .social-login p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .social-login p::before,
+        .social-login p::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .social-login p::before { left: 0; }
+        .social-login p::after { right: 0; }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all var(--hover-speed) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-icon.google:hover { color: #ea4335; border-color: #ea4335; }
+        .social-icon.github:hover { color: #fff; border-color: #fff; }
+        .social-icon.twitter:hover { color: #1da1f2; border-color: #1da1f2; }
+
+        /* Toggle Button */
+        .toggle-btn {
+            padding: 12px 30px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: var(--font-family);
+            cursor: pointer;
+            transition: all var(--hover-speed) ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: width var(--hover-speed) ease;
+            z-index: -1;
+        }
+
+        .toggle-btn:hover::before {
+            width: 100%;
+        }
+
+        .toggle-btn:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 3D Back Face */
+        .back-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+        }
+
+        .front-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                height: auto;
+                min-height: 600px;
+            }
+            
+            .inner {
+                flex-direction: column;
+            }
+            
+            .info-side {
+                display: none;
+            }
+            
+            .form-side {
+                padding: 30px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            display: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: popIn 0.5s ease forwards;
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-checkmark.active {
+            display: flex;
+        }
+
+        .success-checkmark i {
+            color: #fff;
+            font-size: 2rem;
+        }
+
+        @keyframes popIn {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Shake Animation for errors */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        /* Glow effect on focus */
+        .glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+            opacity: 0;
+            transition: opacity var(--hover-speed) ease;
+            pointer-events: none;
+            box-shadow: 0 0 60px rgba(78, 205, 196, 0.2);
+        }
+
+        .card:focus-within .glow {
+            opacity: 1;
+        }
+
+        /* Terms checkbox */
+        .terms {
+            opacity: var(--show-terms);
+        }
+
+        /* Language Selector */
+        .lang-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 8px 15px;
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            cursor: pointer;
+            outline: none;
+            transition: all var(--hover-speed) ease;
+        }
+
+        .lang-selector:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-selector option {
+            background: #1a1a2e;
+            color: var(--text-primary);
+        }
+
+        /* Theme Preview Badge */
+        .theme-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-family: var(--font-family);
+        }
+
+        .theme-badge span {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus visible for keyboard navigation */
+        *:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <select class="lang-selector" id="langSelector" onchange="changeLanguage(this.value)">
+        <option value="en">🇺🇸 English</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pt">🇵🇹 Português</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="hi">🇮🇳 हिन्दी</option>
+    </select>
+
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Container -->
+    <div class="container" id="container">
+        <!-- Front Face - Login -->
+        <div class="card front-face">
+            <div class="glow"></div>
+            <div class="inner">
+                <!-- Login Form -->
+                <div class="form-side">
+                    <h2 data-i18n="loginTitle">Welcome Back</h2>
+                    <p class="subtitle" data-i18n="loginSubtitle">Sign in to continue your journey</p>
+                    
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <input type="email" id="loginEmail" placeholder=" " required aria-label="Email">
+                            <label for="loginEmail" data-i18n="emailLabel">Email Address</label>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" id="loginPassword" placeholder=" " required aria-label="Password">
+                            <label for="loginPassword" data-i18n="passwordLabel">Password</label>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        
+                        <div class="options">
+                            <label class="remember">
+                                <input type="checkbox">
+                                <span data-i18n="rememberMe">Remember me</span>
+                            </label>
+                            <a href="#" class="forgot" data-i18n="forgotPassword">Forgot Password?</a>
+                        </div>
+                        
+                        <button type="submit" class="btn">
+                            <span data-i18n="signIn">Sign In</span>
+                        </button>
+                    </form>
+                    
+                    <div class="social-login">
+                        <p data-i18n="orContinueWith">Or continue with</p>
+                        <div class="social-icons">
+                            <div class="social-icon google" role="button" aria-label="Sign in with Google">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div class="social-icon github" role="button" aria-label="Sign in with GitHub">
+                                <i class="fab fa-github"></i>
+                            </div>
+                            <div class="social-icon twitter" role="button" aria-label="Sign in with Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Info Side -->
+                <div class="info-side">
+                    <i class="fas fa-user-plus floating-icon"></i>
+                    <h2 data-i18n="newHere">New Here?</h2>
+                    <p data-i18n="newHereDesc">Sign up and discover a great amount of new opportunities!</p>
+                    <button class="toggle-btn" onclick="flipCard()">
+                        <span data-i18n="signUp">Sign Up</span> <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Face - Register -->
+        <div class="card back-face">
+            <div class="glow"></div>
+            <div class="inner">
+                <!-- Info Side -->
+                <div class="info-side" style="order: 1;">
+                    <i class="fas fa-sign-in-alt floating-icon"></i>
+                    <h2 data-i18n="oneOfUs">One of Us?</h2>
+                    <p data-i18n="oneOfUsDesc">If you already have an account, just sign in. We've missed you!</p>
+                    <button class="toggle-btn" onclick="flipCard()">
+                        <i class="fas fa-arrow-left" style="margin-right: 8px;"></i> <span data-i18n="signIn">Sign In</span>
+                    </button>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="form-side" style="order: 2;">
+                    <h2 data-i18n="createAccount">Create Account</h2>
+                    <p class="subtitle" data-i18n="createAccountDesc">Start your journey with us today</p>
+                    
+                    <form id="registerForm">
+                        <div class="input-group">
+                            <input type="text" id="regName" placeholder=" " required aria-label="Full Name">
+                            <label for="regName" data-i18n="fullNameLabel">Full Name</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="email" id="regEmail" placeholder=" " required aria-label="Email">
+                            <label for="regEmail" data-i18n="emailLabel">Email Address</label>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" id="regPassword" placeholder=" " required aria-label="Password">
+                            <label for="regPassword" data-i18n="passwordLabel">Password</label>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        
+                        <div class="options terms" style="justify-content: flex-start;">
+                            <label class="remember">
+                                <input type="checkbox" required>
+                                <span data-i18n="agreeTerms">I agree to the <a href="#" style="color: var(--primary-color);">Terms</a></span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn">
+                            <span data-i18n="createAccountBtn">Create Account</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Success Checkmark -->
+    <div class="success-checkmark" id="success">
+        <i class="fas fa-check"></i>
+    </div>
+
+    <!-- Theme Badge -->
+    <div class="theme-badge">
+        <span>🎨</span> Customize via CSS variables
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION OBJECT - EDIT THIS SECTION
+        // ==========================================
+        const CONFIG = {
+            // Branding
+            appName: 'Auth Template',
+            logoUrl: null, // Set to image URL or null
+            
+            // API Endpoints
+            api: {
+                login: '/api/auth/login',
+                register: '/api/auth/register',
+                forgot: '/api/auth/forgot',
+                social: {
+                    google: '/api/auth/google',
+                    github: '/api/auth/github',
+                    twitter: '/api/auth/twitter'
+                }
+            },
+            
+            // Features
+            features: {
+                particles: true,
+                socialLogin: true,
+                rememberMe: true,
+                forgotPassword: true,
+                termsAgreement: true,
+                threeDTilt: true,
+                shimmer: true
+            },
+            
+            // Validation Rules
+            validation: {
+                minPasswordLength: 8,
+                requireUppercase: true,
+                requireNumber: true,
+                requireSpecial: false
+            },
+            
+            // Default Language
+            defaultLanguage: 'en'
+        };
+
+        // ==========================================
+        // INTERNATIONALIZATION (i18n)
+        // ==========================================
+        const i18n = {
+            en: {
+                loginTitle: 'Welcome Back',
+                loginSubtitle: 'Sign in to continue your journey',
+                emailLabel: 'Email Address',
+                passwordLabel: 'Password',
+                rememberMe: 'Remember me',
+                forgotPassword: 'Forgot Password?',
+                signIn: 'Sign In',
+                signUp: 'Sign Up',
+                orContinueWith: 'Or continue with',
+                newHere: 'New Here?',
+                newHereDesc: 'Sign up and discover a great amount of new opportunities!',
+                oneOfUs: 'One of Us?',
+                oneOfUsDesc: 'If you already have an account, just sign in. We\'ve missed you!',
+                createAccount: 'Create Account',
+                createAccountDesc: 'Start your journey with us today',
+                fullNameLabel: 'Full Name',
+                agreeTerms: 'I agree to the Terms',
+                createAccountBtn: 'Create Account',
+                invalidEmail: 'Please enter a valid email address',
+                passwordTooShort: 'Password must be at least 8 characters',
+                passwordRequirements: 'Password must contain uppercase and number',
+                loading: 'Loading...',
+                success: 'Success!',
+                error: 'An error occurred. Please try again.'
+            },
+            es: {
+                loginTitle: 'Bienvenido de Nuevo',
+                loginSubtitle: 'Inicia sesión para continuar',
+                emailLabel: 'Correo Electrónico',
+                passwordLabel: 'Contraseña',
+                rememberMe: 'Recuérdame',
+                forgotPassword: '¿Olvidaste tu contraseña?',
+                signIn: 'Iniciar Sesión',
+                signUp: 'Registrarse',
+                orContinueWith: 'O continuar con',
+                newHere: '¿Nuevo aquí?',
+                newHereDesc: '¡Regístrate y descubre nuevas oportunidades!',
+                oneOfUs: '¿Ya eres uno de nosotros?',
+                oneOfUsDesc: 'Si ya tienes una cuenta, solo inicia sesión. ¡Te extrañamos!',
+                createAccount: 'Crear Cuenta',
+                createAccountDesc: 'Comienza tu viaje con nosotros hoy',
+                fullNameLabel: 'Nombre Completo',
+                agreeTerms: 'Acepto los Términos',
+                createAccountBtn: 'Crear Cuenta',
+                invalidEmail: 'Ingresa un correo válido',
+                passwordTooShort: 'La contraseña debe tener al menos 8 caracteres',
+                passwordRequirements: 'La contraseña debe contener mayúscula y número',
+                loading: 'Cargando...',
+                success: '¡Éxito!',
+                error: 'Ocurrió un error. Inténtalo de nuevo.'
+            },
+            fr: {
+                loginTitle: 'Bon Retour',
+                loginSubtitle: 'Connectez-vous pour continuer',
+                emailLabel: 'Adresse Email',
+                passwordLabel: 'Mot de Passe',
+                rememberMe: 'Se souvenir de moi',
+                forgotPassword: 'Mot de passe oublié?',
+                signIn: 'Se Connecter',
+                signUp: 'S\'inscrire',
+                orContinueWith: 'Ou continuer avec',
+                newHere: 'Nouveau ici?',
+                newHereDesc: 'Inscrivez-vous et découvrez de nouvelles opportunités!',
+                oneOfUs: 'Déjà membre?',
+                oneOfUsDesc: 'Si vous avez déjà un compte, connectez-vous. Vous nous avez manqué!',
+                createAccount: 'Créer un Compte',
+                createAccountDesc: 'Commencez votre voyage avec nous aujourd\'hui',
+                fullNameLabel: 'Nom Complet',
+                agreeTerms: 'J\'accepte les Conditions',
+                createAccountBtn: 'Créer un Compte',
+                invalidEmail: 'Veuillez entrer un email valide',
+                passwordTooShort: 'Le mot de passe doit contenir au moins 8 caractères',
+                passwordRequirements: 'Le mot de passe doit contenir une majuscule et un chiffre',
+                loading: 'Chargement...',
+                success: 'Succès!',
+                error: 'Une erreur s\'est produite. Veuillez réessayer.'
+            },
+            de: {
+                loginTitle: 'Willkommen zurück',
+                loginSubtitle: 'Melden Sie sich an, um fortzufahren',
+                emailLabel: 'E-Mail-Adresse',
+                passwordLabel: 'Passwort',
+                rememberMe: 'Angemeldet bleiben',
+                forgotPassword: 'Passwort vergessen?',
+                signIn: 'Anmelden',
+                signUp: 'Registrieren',
+                orContinueWith: 'Oder fortfahren mit',
+                newHere: 'Neu hier?',
+                newHereDesc: 'Registrieren Sie sich und entdecken Sie neue Möglichkeiten!',
+                oneOfUs: 'Bereits dabei?',
+                oneOfUsDesc: 'Wenn Sie bereits ein Konto haben, melden Sie sich einfach an. Wir haben Sie vermisst!',
+                createAccount: 'Konto erstellen',
+                createAccountDesc: 'Starten Sie noch heute Ihre Reise mit uns',
+                fullNameLabel: 'Vollständiger Name',
+                agreeTerms: 'Ich akzeptiere die AGB',
+                createAccountBtn: 'Konto erstellen',
+                invalidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+                passwordTooShort: 'Passwort muss mindestens 8 Zeichen lang sein',
+                passwordRequirements: 'Passwort muss Großbuchstaben und Zahl enthalten',
+                loading: 'Laden...',
+                success: 'Erfolg!',
+                error: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.'
+            },
+            it: {
+                loginTitle: 'Bentornato',
+                loginSubtitle: 'Accedi per continuare',
+                emailLabel: 'Indirizzo Email',
+                passwordLabel: 'Password',
+                rememberMe: 'Ricordami',
+                forgotPassword: 'Password dimenticata?',
+                signIn: 'Accedi',
+                signUp: 'Registrati',
+                orContinueWith: 'O continua con',
+                newHere: 'Nuovo qui?',
+                newHereDesc: 'Registrati e scopri nuove opportunità!',
+                oneOfUs: 'Già dei nostri?',
+                oneOfUsDesc: 'Se hai già un account, accedi. Ci sei mancato!',
+                createAccount: 'Crea Account',
+                createAccountDesc: 'Inizia il tuo viaggio con noi oggi',
+                fullNameLabel: 'Nome Completo',
+                agreeTerms: 'Accetto i Termini',
+                createAccountBtn: 'Crea Account',
+                invalidEmail: 'Inserisci un indirizzo email valido',
+                passwordTooShort: 'La password deve essere di almeno 8 caratteri',
+                passwordRequirements: 'La password deve contenere maiuscola e numero',
+                loading: 'Caricamento...',
+                success: 'Successo!',
+                error: 'Si è verificato un errore. Riprova.'
+            },
+            pt: {
+                loginTitle: 'Bem-vindo de Volta',
+                loginSubtitle: 'Entre para continuar',
+                emailLabel: 'Endereço de Email',
+                passwordLabel: 'Senha',
+                rememberMe: 'Lembrar-me',
+                forgotPassword: 'Esqueceu a senha?',
+                signIn: 'Entrar',
+                signUp: 'Cadastrar',
+                orContinueWith: 'Ou continuar com',
+                newHere: 'Novo aqui?',
+                newHereDesc: 'Cadastre-se e descubra novas oportunidades!',
+                oneOfUs: 'Já é um de nós?',
+                oneOfUsDesc: 'Se você já tem uma conta, apenas entre. Sentimos sua falta!',
+                createAccount: 'Criar Conta',
+                createAccountDesc: 'Comece sua jornada conosco hoje',
+                fullNameLabel: 'Nome Completo',
+                agreeTerms: 'Concordo com os Termos',
+                createAccountBtn: 'Criar Conta',
+                invalidEmail: 'Por favor, insira um email válido',
+                passwordTooShort: 'A senha deve ter pelo menos 8 caracteres',
+                passwordRequirements: 'A senha deve conter maiúscula e número',
+                loading: 'Carregando...',
+                success: 'Sucesso!',
+                error: 'Ocorreu um erro. Tente novamente.'
+            },
+            ru: {
+                loginTitle: 'С возвращением',
+                loginSubtitle: 'Войдите, чтобы продолжить',
+                emailLabel: 'Email адрес',
+                passwordLabel: 'Пароль',
+                rememberMe: 'Запомнить меня',
+                forgotPassword: 'Забыли пароль?',
+                signIn: 'Войти',
+                signUp: 'Регистрация',
+                orContinueWith: 'Или продолжить через',
+                newHere: 'Впервые здесь?',
+                newHereDesc: 'Зарегистрируйтесь и откройте новые возможности!',
+                oneOfUs: 'Уже с нами?',
+                oneOfUsDesc: 'Если у вас уже есть аккаунт, просто войдите. Мы скучали по вам!',
+                createAccount: 'Создать аккаунт',
+                createAccountDesc: 'Начните свое путешествие с нами сегодня',
+                fullNameLabel: 'Полное имя',
+                agreeTerms: 'Я согласен с Условиями',
+                createAccountBtn: 'Создать аккаунт',
+                invalidEmail: 'Введите действительный email',
+                passwordTooShort: 'Пароль должен быть не менее 8 символов',
+                passwordRequirements: 'Пароль должен содержать заглавную букву и цифру',
+                loading: 'Загрузка...',
+                success: 'Успех!',
+                error: 'Произошла ошибка. Попробуйте снова.'
+            },
+            zh: {
+                loginTitle: '欢迎回来',
+                loginSubtitle: '登录以继续您的旅程',
+                emailLabel: '电子邮件地址',
+                passwordLabel: '密码',
+                rememberMe: '记住我',
+                forgotPassword: '忘记密码？',
+                signIn: '登录',
+                signUp: '注册',
+                orContinueWith: '或使用以下方式继续',
+                newHere: '新用户？',
+                newHereDesc: '注册并发现大量新机会！',
+                oneOfUs: '已经是会员？',
+                oneOfUsDesc: '如果您已有账户，请直接登录。我们想念您！',
+                createAccount: '创建账户',
+                createAccountDesc: '今天就开始与我们的旅程',
+                fullNameLabel: '全名',
+                agreeTerms: '我同意条款',
+                createAccountBtn: '创建账户',
+                invalidEmail: '请输入有效的电子邮件地址',
+                passwordTooShort: '密码至少8个字符',
+                passwordRequirements: '密码必须包含大写字母和数字',
+                loading: '加载中...',
+                success: '成功！',
+                error: '发生错误，请重试。'
+            },
+            ja: {
+                loginTitle: 'お帰りなさい',
+                loginSubtitle: 'サインインして続ける',
+                emailLabel: 'メールアドレス',
+                passwordLabel: 'パスワード',
+                rememberMe: '記憶する',
+                forgotPassword: 'パスワードを忘れた？',
+                signIn: 'サインイン',
+                signUp: '新規登録',
+                orContinueWith: 'または以下で続行',
+                newHere: '初めてですか？',
+                newHereDesc: '登録して新しい機会を発見しよう！',
+                oneOfUs: '既に会員？',
+                oneOfUsDesc: 'アカウントをお持ちの場合はサインインしてください。お待ちしておりました！',
+                createAccount: 'アカウント作成',
+                createAccountDesc: '今日から私たちと旅を始めましょう',
+                fullNameLabel: 'フルネーム',
+                agreeTerms: '規約に同意する',
+                createAccountBtn: 'アカウント作成',
+                invalidEmail: '有効なメールアドレスを入力してください',
+                passwordTooShort: 'パスワードは8文字以上必要です',
+                passwordRequirements: 'パスワードには大文字と数字が必要です',
+                loading: '読み込み中...',
+                success: '成功！',
+                error: 'エラーが発生しました。もう一度お試しください。'
+            },
+            ko: {
+                loginTitle: '다시 오신 것을 환영합니다',
+                loginSubtitle: '계속하려면 로그인하세요',
+                emailLabel: '이메일 주소',
+                passwordLabel: '비밀번호',
+                rememberMe: '기억하기',
+                forgotPassword: '비밀번호를 잊으셨나요?',
+                signIn: '로그인',
+                signUp: '회원가입',
+                orContinueWith: '또는 다음으로 계속',
+                newHere: '처음 오셨나요?',
+                newHereDesc: '가입하고 새로운 기회를 발견하세요!',
+                oneOfUs: '이미 회원이신가요?',
+                oneOfUsDesc: '이미 계정이 있으시면 로그인하세요. 보고 싶었어요!',
+                createAccount: '계정 만들기',
+                createAccountDesc: '오늘 우리와 여정을 시작하세요',
+                fullNameLabel: '전체 이름',
+                agreeTerms: '약관에 동의합니다',
+                createAccountBtn: '계정 만들기',
+                invalidEmail: '유효한 이메일 주소를 입력하세요',
+                passwordTooShort: '비밀번호는 8자 이상이어야 합니다',
+                passwordRequirements: '비밀번호에 대문자와 숫자가 포함되어야 합니다',
+                loading: '로딩 중...',
+                success: '성공!',
+                error: '오류가 발생했습니다. 다시 시도해 주세요.'
+            },
+            ar: {
+                loginTitle: 'مرحباً بعودتك',
+                loginSubtitle: 'سجل الدخول للمتابعة',
+                emailLabel: 'البريد الإلكتروني',
+                passwordLabel: 'كلمة المرور',
+                rememberMe: 'تذكرني',
+                forgotPassword: 'نسيت كلمة المرور؟',
+                signIn: 'تسجيل الدخول',
+                signUp: 'إنشاء حساب',
+                orContinueWith: 'أو المتابعة مع',
+                newHere: 'جديد هنا؟',
+                newHereDesc: 'سجل واكتشف فرصاً جديدة!',
+                oneOfUs: 'منا بالفعل؟',
+                oneOfUsDesc: 'إذا كان لديك حساب بالفعل، فقط سجل الدخول. اشتقنا إليك!',
+                createAccount: 'إنشاء حساب',
+                createAccountDesc: 'ابدأ رحلتك معنا اليوم',
+                fullNameLabel: 'الاسم الكامل',
+                agreeTerms: 'أوافق على الشروط',
+                createAccountBtn: 'إنشاء حساب',
+                invalidEmail: 'أدخل بريداً إلكترونياً صالحاً',
+                passwordTooShort: 'يجب أن تكون كلمة المرور 8 أحرف على الأقل',
+                passwordRequirements: 'يجب أن تحتوي كلمة المرور على حرف كبير ورقم',
+                loading: 'جاري التحميل...',
+                success: 'نجاح!',
+                error: 'حدث خطأ. يرجى المحاولة مرة أخرى.'
+            },
+            hi: {
+                loginTitle: 'वापसी पर स्वागत है',
+                loginSubtitle: 'जारी रखने के लिए साइन इन करें',
+                emailLabel: 'ईमेल पता',
+                passwordLabel: 'पासवर्ड',
+                rememberMe: 'मुझे याद रखें',
+                forgotPassword: 'पासवर्ड भूल गए?',
+                signIn: 'साइन इन',
+                signUp: 'साइन अप',
+                orContinueWith: 'या इसके साथ जारी रखें',
+                newHere: 'नए हैं?',
+                newHereDesc: 'साइन अप करें और नए अवसरों की खोज करें!',
+                oneOfUs: 'पहले से सदस्य?',
+                oneOfUsDesc: 'यदि आपके पास पहले से खाता है, तो बस साइन इन करें। हमने आपको याद किया!',
+                createAccount: 'खाता बनाएं',
+                createAccountDesc: 'आज ही हमारे साथ अपनी यात्रा शुरू करें',
+                fullNameLabel: 'पूरा नाम',
+                agreeTerms: 'मैं नियमों से सहमत हूं',
+                createAccountBtn: 'खाता बनाएं',
+                invalidEmail: 'कृपया वैध ईमेल दर्ज करें',
+                passwordTooShort: 'पासवर्ड कम से कम 8 अक्षर का होना चाहिए',
+                passwordRequirements: 'पासवर्ड में बड़ा अक्षर और संख्या होनी चाहिए',
+                loading: 'लोड हो रहा है...',
+                success: 'सफल!',
+                error: 'एक त्रुटि हुई। कृपया पुनः प्रयास करें।'
+            }
+        };
+
+        // ==========================================
+        // CORE FUNCTIONALITY
+        // ==========================================
+        
+        let currentLang = CONFIG.defaultLanguage;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            changeLanguage(currentLang);
+            applyFeatureToggles();
+            setupFormHandlers();
+            setupParallax();
+        });
+
+        // Generate floating particles
+        function createParticles() {
+            if (!CONFIG.features.particles) return;
+            
+            const container = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                container.appendChild(particle);
+            }
+        }
+
+        // 3D Flip Animation
+        function flipCard() {
+            const container = document.getElementById('container');
+            container.classList.toggle('flip');
+        }
+
+        // Language Switcher
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const texts = i18n[lang] || i18n.en;
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (texts[key]) {
+                    el.textContent = texts[key];
+                }
+            });
+            
+            // Update document language
+            document.documentElement.lang = lang;
+            
+            // RTL support for Arabic
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+                document.querySelectorAll('.input-group i').forEach(icon => {
+                    icon.style.left = 'auto';
+                    icon.style.right = '20px';
+                });
+                document.querySelectorAll('.input-group input').forEach(input => {
+                    input.style.paddingLeft = '20px';
+                    input.style.paddingRight = '50px';
+                });
+                document.querySelectorAll('.input-group label').forEach(label => {
+                    label.style.left = 'auto';
+                    label.style.right = '50px';
+                });
+            } else {
+                document.documentElement.dir = 'ltr';
+                document.querySelectorAll('.input-group i').forEach(icon => {
+                    icon.style.left = '20px';
+                    icon.style.right = 'auto';
+                });
+                document.querySelectorAll('.input-group input').forEach(input => {
+                    input.style.paddingLeft = '50px';
+                    input.style.paddingRight = '20px';
+                });
+                document.querySelectorAll('.input-group label').forEach(label => {
+                    label.style.left = '50px';
+                    label.style.right = 'auto';
+                });
+            }
+        }
+
+        // Apply Feature Toggles
+        function applyFeatureToggles() {
+            const root = document.documentElement;
+            root.style.setProperty('--show-particles', CONFIG.features.particles ? '1' : '0');
+            root.style.setProperty('--show-social', CONFIG.features.socialLogin ? '1' : '0');
+            root.style.setProperty('--show-remember', CONFIG.features.rememberMe ? '1' : '0');
+            root.style.setProperty('--show-forgot', CONFIG.features.forgotPassword ? '1' : '0');
+            root.style.setProperty('--show-terms', CONFIG.features.termsAgreement ? '1' : '0');
+            root.style.setProperty('--enable-3d-tilt', CONFIG.features.threeDTilt ? '1' : '0');
+            root.style.setProperty('--enable-shimmer', CONFIG.features.shimmer ? '1' : '0');
+        }
+
+        // Form Handlers
+        function setupFormHandlers() {
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (validateForm('login')) {
+                    handleSubmit('login');
+                }
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (validateForm('register')) {
+                    handleSubmit('register');
+                }
+            });
+
+            // Social login handlers
+            document.querySelectorAll('.social-icon').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const provider = this.classList.contains('google') ? 'google' :
+                                   this.classList.contains('github') ? 'github' : 'twitter';
+                    handleSocialLogin(provider);
+                });
+            });
+        }
+
+        // Validation
+        function validateForm(type) {
+            const texts = i18n[currentLang] || i18n.en;
+            
+            if (type === 'login') {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!isValidEmail(email)) {
+                    showError(texts.invalidEmail);
+                    return false;
+                }
+                if (password.length < CONFIG.validation.minPasswordLength) {
+                    showError(texts.passwordTooShort);
+                    return false;
+                }
+                return true;
+            }
+            
+            if (type === 'register') {
+                const email = document.getElementById('regEmail').value;
+                const password = document.getElementById('regPassword').value;
+                
+                if (!isValidEmail(email)) {
+                    showError(texts.invalidEmail);
+                    return false;
+                }
+                if (password.length < CONFIG.validation.minPasswordLength) {
+                    showError(texts.passwordTooShort);
+                    return false;
+                }
+                if (CONFIG.validation.requireUppercase && !/[A-Z]/.test(password)) {
+                    showError(texts.passwordRequirements);
+                    return false;
+                }
+                if (CONFIG.validation.requireNumber && !/\d/.test(password)) {
+                    showError(texts.passwordRequirements);
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showError(message) {
+            const container = document.getElementById('container');
+            container.classList.add('shake');
+            setTimeout(() => container.classList.remove('shake'), 500);
+            // In production, show a toast notification
+            console.error(message);
+        }
+
+        // Submit Handler
+        async function handleSubmit(type) {
+            const loading = document.getElementById('loading');
+            const success = document.getElementById('success');
+            const texts = i18n[currentLang] || i18n.en;
+            
+            loading.classList.add('active');
+            
+            try {
+                const formData = type === 'login' ? {
+                    email: document.getElementById('loginEmail').value,
+                    password: document.getElementById('loginPassword').value
+                } : {
+                    name: document.getElementById('regName').value,
+                    email: document.getElementById('regEmail').value,
+                    password: document.getElementById('regPassword').value
+                };
+                
+                // API Call
+                const response = await fetch(type === 'login' ? CONFIG.api.login : CONFIG.api.register, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                loading.classList.remove('active');
+                
+                if (response.ok) {
+                    success.classList.add('active');
+                    setTimeout(() => {
+                        success.classList.remove('active');
+                        // Redirect or callback
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showError(texts.error);
+                }
+            } catch (err) {
+                loading.classList.remove('active');
+                showError(texts.error);
+            }
+        }
+
+        // Social Login
+        function handleSocialLogin(provider) {
+            const url = CONFIG.api.social[provider];
+            if (url) {
+                window.location.href = url;
+            }
+        }
+
+        // Parallax Effect
+        function setupParallax() {
+            if (!CONFIG.features.threeDTilt) return;
+            
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth / 2 - e.pageX) / 50;
+                const y = (window.innerHeight / 2 - e.pageY) / 50;
+                const container = document.getElementById('container');
+                
+                if (!container.classList.contains('flip')) {
+                    container.style.transform = `rotateX(${y}deg) rotateY(${-x}deg)`;
+                } else {
+                    container.style.transform = `rotateY(180deg) rotateX(${y}deg) rotateY(${-x}deg)`;
+                }
+            });
+            
+            document.addEventListener('mouseleave', () => {
+                const container = document.getElementById('container');
+                if (!container.classList.contains('flip')) {
+                    container.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                } else {
+                    container.style.transform = 'rotateY(180deg)';
+                }
+            });
+        }
+
+        // Input focus effects
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Social icon interactions
+        document.querySelectorAll('.social-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
